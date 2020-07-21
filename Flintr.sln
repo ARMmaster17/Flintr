@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flintr-Runner", "Flintr-Runner\Flintr-Runner.csproj", "{D3B9E950-233C-4448-8C94-230496827DA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flintr-Runner-Test", "Flintr-Runner-Test\Flintr-Runner-Test.csproj", "{0A01001D-CADF-4758-8847-67D93D1121F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3B9E950-233C-4448-8C94-230496827DA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3B9E950-233C-4448-8C94-230496827DA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3B9E950-233C-4448-8C94-230496827DA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B9E950-233C-4448-8C94-230496827DA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A01001D-CADF-4758-8847-67D93D1121F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A01001D-CADF-4758-8847-67D93D1121F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A01001D-CADF-4758-8847-67D93D1121F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A01001D-CADF-4758-8847-67D93D1121F0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {974B93A8-C4D6-488A-8D4E-2F9151CDFF88}
+	EndGlobalSection
+EndGlobal
