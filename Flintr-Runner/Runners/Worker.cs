@@ -1,5 +1,6 @@
 ﻿using Flintr_Runner.Communication;
 using Flintr_Runner.Configuration;
+using Flintr_Runner.WorkerHelpers;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -14,14 +15,17 @@ namespace Flintr_Runner.Runners
         private TCPClient managerConnection;
         private string workerName;
         private int assignedPort;
+        private ManagerMessageProcessor managerMessageProcessor;
 
         public Worker(RuntimeConfiguration runtimeConfiguration) : base(runtimeConfiguration)
         {
+            managerMessageProcessor = new ManagerMessageProcessor(runtimeConfiguration);
         }
 
         public override void runWork()
         {
             managerConnection.Send("HEARTBEAT");
+            checkForMessages();
             Thread.Sleep(1000);
         }
 
@@ -52,6 +56,14 @@ namespace Flintr_Runner.Runners
             SharedLogger.Msg($"Registered to manager server at {managerAddress.ToString()}");
             SharedLogger.Debug(registrationInfo);
             assignedPort = Convert.ToInt32(registrationInfo);
+        }
+
+        private void checkForMessages()
+        {
+            if (managerConnection.MessageIsAvailable())
+            {
+                managerMessageProcessor.ProcessMessage(managerConnection.Receive());
+            }
         }
     }
 }

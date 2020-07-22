@@ -20,5 +20,11 @@ namespace Flintr_Runner.ManagerHelpers
             LastHeartBeat = lastHeartBeat;
             Port = port;
         }
+
+        public bool IsDead()
+        {
+            TimeSpan timeSinceLastHeartbeat = DateTime.Now.Subtract(LastHeartBeat);
+            return timeSinceLastHeartbeat > new TimeSpan(0, 0, 5);
+        }
     }
 }

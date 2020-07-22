@@ -49,6 +49,11 @@ namespace Flintr_Runner.ManagerHelpers
             return registrationPool;
         }
 
+        public List<WorkerRegistration> GetNonDeadWorkerPool()
+        {
+            return GetRegistrationPool().FindAll(o => !o.IsDead());
+        }
+
         public void AddToPool(WorkerRegistration workerRegistration)
         {
             while (poolLocked) { Thread.Sleep(500); }
