@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Threading;
 
 namespace Flintr_Runner.ManagerHelpers
 {
@@ -14,27 +15,49 @@ namespace Flintr_Runner.ManagerHelpers
         private IPAddress hostAddress;
         private int basePort;
 
+        private bool poolLocked;
+
+        private RuntimeConfiguration runtimeConfiguration;
+
         public WorkerRegistrationPool(RuntimeConfiguration runtimeConfiguration)
         {
+            this.runtimeConfiguration = runtimeConfiguration;
             registrationPool = new List<WorkerRegistration>();
             hostAddress = runtimeConfiguration.GetManagerBindAddress();
             basePort = runtimeConfiguration.GetManagerComPort() + 1;
+            poolLocked = false;
         }
 
         public WorkerRegistration RegisterNewWorker()
         {
             int port = basePort + registrationPool.Count;
-            TCPServer clientManager = new TCPServer(hostAddress, port);
             DateTime firstHeartBeat = DateTime.Now;
             string name = "worker-" + (registrationPool.Count + 1);
-            WorkerRegistration registration = new WorkerRegistration(name, clientManager, port, firstHeartBeat);
-            registrationPool.Add(registration);
+            WorkerRegistration registration = new WorkerRegistration(name, null, port, firstHeartBeat);
+            AddToPool(registration);
             return registration;
+        }
+
+        public void LockRegistrationPool()
+        {
+            while (poolLocked) { Thread.Sleep(500); }
+            poolLocked = true;
         }
 
         public List<WorkerRegistration> GetRegistrationPool()
         {
             return registrationPool;
+        }
+
+        public void AddToPool(WorkerRegistration workerRegistration)
+        {
+            while (poolLocked) { Thread.Sleep(500); }
+            registrationPool.Add(workerRegistration);
+        }
+
+        public void UnlockRegistrationPool()
+        {
+            poolLocked = false;
         }
     }
 }

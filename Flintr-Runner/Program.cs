@@ -26,10 +26,14 @@ namespace Flintr_Runner
             manager.Setup(runtimeConfiguration);
             // Start the Manager service thread.
             Task managerThread = Task.Run(() => manager.RunAsync());
+
+            // Wait a few seconds for the manager to get set up.
+            Thread.Sleep(1000);
+
             // Set up the workers.
             WorkerPool workerPool = new WorkerPool(runtimeConfiguration);
             workerPool.SetupAllWorkers(runtimeConfiguration);
-            //workerPool.RunAllWorkersAsync();
+            workerPool.RunAllWorkersAsync();
             Console.CancelKeyPress += (s, e) =>
             {
                 runtimeConfiguration.GetLoggerInstance().Error("Console kill command received. Forcing shutdown.");

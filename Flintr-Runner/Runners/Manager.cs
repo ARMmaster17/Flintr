@@ -1,4 +1,5 @@
-﻿using Flintr_Runner.Configuration;
+﻿using Flintr_Runner.Communication;
+using Flintr_Runner.Configuration;
 using Flintr_Runner.ManagerHelpers;
 using System;
 using System.Collections.Generic;
@@ -14,19 +15,18 @@ namespace Flintr_Runner.Runners
     {
         private WorkerRegistrationManager workerRegistrationManager;
         private WorkerRegistrationPool workerRegistrationPool;
+        private WorkerMessageProcessor workerMessageProcessor;
+        private TimeSpan workerHeartbeatTimeout;
 
         public Manager(RuntimeConfiguration runtimeConfiguration) : base(runtimeConfiguration)
         {
+            workerHeartbeatTimeout = new TimeSpan(0, 0, runtimeConfiguration.GetWorkerHeartbeatTimeout());
         }
 
         public override void runWork()
         {
-            List<WorkerRegistration> workerList = workerRegistrationPool.GetRegistrationPool();
-            SharedLogger.Debug($"Worker pool currently has {workerList.Count} registrations.");
-            foreach (WorkerRegistration wr in workerList)
-            {
-                SharedLogger.Debug($"{wr.Name} on port {wr.Port}");
-            }
+            checkMessages();
+            workerHealthCheck();
             Thread.Sleep(1000);
         }
 
@@ -34,8 +34,40 @@ namespace Flintr_Runner.Runners
         {
             workerRegistrationPool = new WorkerRegistrationPool(runtimeConfiguration);
             workerRegistrationManager = new WorkerRegistrationManager(runtimeConfiguration, workerRegistrationPool);
+            workerMessageProcessor = new WorkerMessageProcessor(runtimeConfiguration, workerRegistrationPool);
             Task.Run(() => workerRegistrationManager.ListenAsync());
             SharedLogger.Msg($"Manager is listening for registrations at {runtimeConfiguration.GetManagerBindAddress().ToString()}:{runtimeConfiguration.GetManagerComPort()}");
+        }
+
+        private void checkMessages()
+        {
+            workerRegistrationPool.LockRegistrationPool();
+            foreach (WorkerRegistration wr in workerRegistrationPool.GetRegistrationPool())
+            {
+                if (wr.ClientServer == null)
+                {
+                    // Do nothing, client is still in registration phase.
+                }
+                else if (wr.ClientServer.MessageIsAvailable())
+                {
+                    workerMessageProcessor.ProcessMessage(wr, wr.ClientServer.Receive());
+                }
+            }
+            workerRegistrationPool.UnlockRegistrationPool();
+        }
+
+        private void workerHealthCheck()
+        {
+            workerRegistrationPool.LockRegistrationPool();
+            foreach (WorkerRegistration wr in workerRegistrationPool.GetRegistrationPool())
+            {
+                TimeSpan timeSinceLastHeartbeat = DateTime.Now.Subtract(wr.LastHeartBeat);
+                if (timeSinceLastHeartbeat > new TimeSpan(0, 0, 5))
+                {
+                    SharedLogger.Warning($"Worker {wr.Name} has been dead for over {Math.Round(timeSinceLastHeartbeat.TotalSeconds, 0)} seconds!");
+                }
+            }
+            workerRegistrationPool.UnlockRegistrationPool();
         }
     }
 }

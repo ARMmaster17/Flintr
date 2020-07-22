@@ -12,6 +12,8 @@ namespace Flintr_Runner.Runners
     public class Worker : Runner
     {
         private TCPClient managerConnection;
+        private string workerName;
+        private int assignedPort;
 
         public Worker(RuntimeConfiguration runtimeConfiguration) : base(runtimeConfiguration)
         {
@@ -19,7 +21,8 @@ namespace Flintr_Runner.Runners
 
         public override void runWork()
         {
-            //SharedLogger.Debug("Worker doing work");
+            managerConnection.Send("HEARTBEAT");
+            Thread.Sleep(1000);
         }
 
         public override void Setup(RuntimeConfiguration runtimeConfiguration)
@@ -30,17 +33,25 @@ namespace Flintr_Runner.Runners
 
         private void registerWorker(IPAddress managerAddress, int registrationPort)
         {
+            getNewPort(managerAddress, registrationPort);
+            managerConnection = new TCPClient(managerAddress, assignedPort);
+            managerConnection.Send("TRANSFER");
+        }
+
+        private void getNewPort(IPAddress managerAddress, int registrationPort)
+        {
             TCPClient registrationConnection = new TCPClient(managerAddress, registrationPort);
+            SharedLogger.Debug($"Registration sent to {managerAddress}:{registrationPort}.");
             registrationConnection.Send("REGISTER");
-            while (!registrationConnection.MessageIsAvailable())
-            {
-                Thread.Sleep(1000);
-            }
-            string registrationInfo = registrationConnection.Recieve();
+            //while (!registrationConnection.MessageIsAvailable())
+            //{
+            //    Thread.Sleep(500);
+            //}
+            string registrationInfo = null;
+            registrationInfo = registrationConnection.Receive();
             SharedLogger.Msg($"Registered to manager server at {managerAddress.ToString()}");
             SharedLogger.Debug(registrationInfo);
-            int newPort = Convert.ToInt32(registrationInfo);
-            managerConnection = new TCPClient(managerAddress, newPort);
+            assignedPort = Convert.ToInt32(registrationInfo);
         }
     }
 }

@@ -1,45 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace Flintr_Runner.Communication
 {
     public class TCPClient
     {
-        private Socket sender;
+        private TcpClient sender;
+        private NetworkStream stream;
+        private StreamReader streamReader;
+        private StreamWriter streamWriter;
 
         public TCPClient(IPAddress address, int port)
         {
             IPEndPoint hostEndpoint = new IPEndPoint(address, port);
-            sender = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            //try
+            //{
+            sender = new TcpClient();
             sender.Connect(hostEndpoint);
+            //}
+            //catch (SocketException e)
+            //{
+            //}
+            while (!sender.Connected)
+            {
+                Thread.Sleep(500);
+            }
+            stream = sender.GetStream();
+            streamWriter = new StreamWriter(stream);
+            streamReader = new StreamReader(stream);
+        }
+
+        public TCPClient(TcpClient newClientConnection)
+        {
+            sender = newClientConnection;
+            stream = sender.GetStream();
+            streamWriter = new StreamWriter(stream);
+            streamReader = new StreamReader(stream);
+        }
+
+        ~TCPClient()
+        {
+            stream.Close();
+            sender.Close();
         }
 
         public void Send(string message)
         {
-            byte[] msg = Encoding.ASCII.GetBytes(message + "<EOF>");
-            sender.Send(msg);
+            streamWriter.WriteLine(message);
+            streamWriter.Flush();
         }
 
         public bool MessageIsAvailable()
         {
-            return sender.Available > 0;
+            return stream.DataAvailable;
         }
 
-        public string Recieve()
+        public string Receive()
         {
-            if (!MessageIsAvailable()) return null;
-            string data = null;
-            byte[] byteStream = new Byte[1024];
-            while (true)
-            {
-                int bytesRec = sender.Receive(byteStream);
-                data += Encoding.ASCII.GetString(byteStream, 0, bytesRec);
-                if (data.IndexOf("<EOF>") > -1) break;
-            }
-            data = data.Remove(data.Length - 5);
+            string data = streamReader.ReadLine();
             return data;
         }
     }

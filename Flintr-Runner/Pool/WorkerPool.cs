@@ -3,6 +3,7 @@ using Flintr_Runner.Runners;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Flintr_Runner.Pool
@@ -25,6 +26,7 @@ namespace Flintr_Runner.Pool
             foreach (Worker worker in pool)
             {
                 worker.Setup(runtimeConfiguration);
+                Thread.Sleep(500);
             }
         }
 

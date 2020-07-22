@@ -9,14 +9,14 @@ namespace Flintr_Runner.ManagerHelpers
     public class WorkerRegistration
     {
         public string Name;
-        public TCPServer ClientConnection;
+        public TCPClient ClientServer;
         public DateTime LastHeartBeat;
         public int Port;
 
-        public WorkerRegistration(string name, TCPServer clientConnection, int port, DateTime lastHeartBeat)
+        public WorkerRegistration(string name, TCPClient clientServer, int port, DateTime lastHeartBeat)
         {
             Name = name;
-            ClientConnection = clientConnection;
+            ClientServer = clientServer;
             LastHeartBeat = lastHeartBeat;
             Port = port;
         }

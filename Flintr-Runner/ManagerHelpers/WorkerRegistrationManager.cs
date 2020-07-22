@@ -16,14 +16,16 @@ namespace Flintr_Runner.ManagerHelpers
         private Logger.Logger sharedLogger;
         private WorkerRegistrationPool registrationPool;
         private IPAddress managerBindIP;
+        private RuntimeConfiguration runtimeConfiguration;
 
         public WorkerRegistrationManager(RuntimeConfiguration runtimeConfiguration, WorkerRegistrationPool workerRegistrationPool)
         {
             managerBindIP = runtimeConfiguration.GetManagerBindAddress();
-            tcpServer = new TCPServer(managerBindIP, runtimeConfiguration.GetManagerComPort());
+            tcpServer = new TCPServer(managerBindIP, runtimeConfiguration.GetManagerComPort(), runtimeConfiguration);
             shouldListen = false;
             registrationPool = workerRegistrationPool;
             sharedLogger = runtimeConfiguration.GetLoggerInstance();
+            this.runtimeConfiguration = runtimeConfiguration;
         }
 
         public void ListenAsync()
@@ -31,9 +33,13 @@ namespace Flintr_Runner.ManagerHelpers
             shouldListen = true;
             while (shouldListen)
             {
-                Socket newClient = tcpServer.WaitForNextConnection();
-                string redirectInfo = getNewWorkerRegistrationInformation(tcpServer.GetNextMessage(newClient));
-                tcpServer.SendMesage(newClient, redirectInfo);
+                TCPClient newClient = tcpServer.WaitForNextConnection();
+                WorkerRegistration registration = getNewWorkerRegistrationInformation(newClient.Receive());
+                newClient.Send(registration.Port.ToString());
+                sharedLogger.Debug($"Transferring {registration.Name} to new connection...");
+                TCPServer newConnection = new TCPServer(managerBindIP, registration.Port, runtimeConfiguration);
+                registration.ClientServer = newConnection.WaitForNextConnection();
+                sharedLogger.Debug($"Connection successful on new channel.");
             }
         }
 
@@ -42,11 +48,11 @@ namespace Flintr_Runner.ManagerHelpers
             shouldListen = false;
         }
 
-        private string getNewWorkerRegistrationInformation(string infoString)
+        private WorkerRegistration getNewWorkerRegistrationInformation(string infoString)
         {
             WorkerRegistration newRegistration = registrationPool.RegisterNewWorker();
             sharedLogger.Msg($"New worker registration '{newRegistration.Name}' on port {newRegistration.Port}");
-            return Convert.ToString(newRegistration.Port);
+            return newRegistration;
         }
     }
 }

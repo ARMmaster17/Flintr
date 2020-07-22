@@ -14,6 +14,7 @@ namespace Flintr_Runner.Configuration
         protected int managerConPort;
         protected IPAddress workerConnectComAddress;
         protected int workerConnectComPort;
+        protected int workerDeadHeartbeatTimeout;
 
         public RuntimeConfiguration()
         {
@@ -26,6 +27,7 @@ namespace Flintr_Runner.Configuration
             managerConPort = 4000;
             workerConnectComAddress = IPAddress.Parse("127.0.0.1");
             workerConnectComPort = 4000;
+            workerDeadHeartbeatTimeout = 5;
         }
 
         public Logger.Logger GetLoggerInstance()
@@ -56,6 +58,11 @@ namespace Flintr_Runner.Configuration
         public int GetWorkerConnectComPort()
         {
             return workerConnectComPort;
+        }
+
+        public int GetWorkerHeartbeatTimeout()
+        {
+            return workerDeadHeartbeatTimeout;
         }
     }
 }
