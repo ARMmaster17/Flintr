@@ -17,6 +17,7 @@ namespace Flintr_Runner.ManagerHelpers
         private List<TCPClient> activeClients;
         private Logger.Logger sharedLogger;
         private ReportProcessor reportProcessor;
+        private CommandProcessor commandProcessor;
 
         public ApiMessageProcessor(RuntimeConfiguration runtimeConfiguration, WorkerRegistrationPool workerRegistrationPool, JobDispatchManager jobDispatchManager)
         {
@@ -26,6 +27,7 @@ namespace Flintr_Runner.ManagerHelpers
             this.jobDispatchManager = jobDispatchManager;
             reportProcessor = new ReportProcessor(workerRegistrationPool, jobDispatchManager);
             activeClients = new List<TCPClient>();
+            commandProcessor = new CommandProcessor(jobDispatchManager);
         }
 
         public void ListenAsync()
@@ -50,7 +52,8 @@ namespace Flintr_Runner.ManagerHelpers
         private void processMessage(TCPClient client, string rawCommand)
         {
             if (ReportProcessor.IsReportRequest(rawCommand)) reportProcessor.ProcessReportRequest(client, rawCommand);
-            else if (Regex.IsMatch(rawCommand, @"^EXECUTE .+")) throw new NotImplementedException();
+            else if (Regex.IsMatch(rawCommand, @"^EXECUTE$")) commandProcessor.ExecuteJob(client);
+            else if (Regex.IsMatch(rawCommand, @"^QUEUEJOB$")) commandProcessor.QueueJob(client);
         }
     }
 }

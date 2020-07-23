@@ -79,5 +79,10 @@ namespace Flintr_Runner.Communication
         {
             return binaryFormatter.Deserialize(streamReader.BaseStream);
         }
+
+        public T RecieveObject<T>()
+        {
+            return (T)RecieveObject();
+        }
     }
 }
