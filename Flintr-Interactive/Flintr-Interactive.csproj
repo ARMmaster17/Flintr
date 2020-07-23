@@ -3,10 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Flintr_Runner</RootNamespace>
+    <RootNamespace>Flintr_Interactive</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Flintr-lib\Flintr-lib.csproj" />
+    <ProjectReference Include="..\Flintr-Runner\Flintr-Runner.csproj" />
   </ItemGroup>
+
 </Project>

@@ -29,13 +29,20 @@ namespace Flintr_Runner.ManagerHelpers.Dispatch
         public void QueueJob(Job job)
         {
             jobQueue.Enqueue(job);
+            if (!workersAvailable())
+            {
+                sharedLogger.Warning("A job was queued but no workers are available!");
+            }
         }
 
         public void ProcessJobQueue()
         {
-            while (jobQueue.Count > 0)
+            if (workersAvailable())
             {
-                DispatchJob(jobQueue.Dequeue());
+                while (jobQueue.Count > 0)
+                {
+                    DispatchJob(jobQueue.Dequeue());
+                }
             }
         }
 
@@ -88,6 +95,11 @@ namespace Flintr_Runner.ManagerHelpers.Dispatch
         {
             nextTaskId++;
             return nextTaskId;
+        }
+
+        private bool workersAvailable()
+        {
+            return workerPool.GetNonDeadWorkerPool().Count > 0;
         }
     }
 }

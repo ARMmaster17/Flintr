@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 
-namespace Flintr_Runner.Communication
+namespace Flintr_lib
 {
     public class TCPClient
     {
@@ -15,7 +14,6 @@ namespace Flintr_Runner.Communication
         private NetworkStream stream;
         private StreamReader streamReader;
         private StreamWriter streamWriter;
-        private BinaryFormatter binaryFormatter;
 
         public TCPClient(IPAddress address, int port)
         {
@@ -35,7 +33,25 @@ namespace Flintr_Runner.Communication
             stream = sender.GetStream();
             streamWriter = new StreamWriter(stream);
             streamReader = new StreamReader(stream);
-            binaryFormatter = new BinaryFormatter();
+        }
+
+        public TCPClient(IPEndPoint hostEndpoint)
+        {
+            //try
+            //{
+            sender = new TcpClient();
+            sender.Connect(hostEndpoint);
+            //}
+            //catch (SocketException e)
+            //{
+            //}
+            while (!sender.Connected)
+            {
+                Thread.Sleep(500);
+            }
+            stream = sender.GetStream();
+            streamWriter = new StreamWriter(stream);
+            streamReader = new StreamReader(stream);
         }
 
         public TCPClient(TcpClient newClientConnection)
@@ -44,7 +60,6 @@ namespace Flintr_Runner.Communication
             stream = sender.GetStream();
             streamWriter = new StreamWriter(stream);
             streamReader = new StreamReader(stream);
-            binaryFormatter = new BinaryFormatter();
         }
 
         ~TCPClient()
@@ -59,11 +74,6 @@ namespace Flintr_Runner.Communication
             streamWriter.Flush();
         }
 
-        public void SendObject(object obj)
-        {
-            binaryFormatter.Serialize(streamWriter.BaseStream, obj);
-        }
-
         public bool MessageIsAvailable()
         {
             return stream.DataAvailable;
@@ -75,9 +85,14 @@ namespace Flintr_Runner.Communication
             return data;
         }
 
-        public object RecieveObject()
+        public StreamWriter GetNetworkStreamWriter()
         {
-            return binaryFormatter.Deserialize(streamReader.BaseStream);
+            return streamWriter;
+        }
+
+        public StreamReader GetNetworkStreamReader()
+        {
+            return streamReader;
         }
     }
 }

@@ -22,6 +22,7 @@ namespace Flintr_Runner.Runners
         private WorkerMessageProcessor workerMessageProcessor;
         private JobDispatchManager jobDispatchManager;
         private TimeSpan workerHeartbeatTimeout;
+        private ApiMessageProcessor apiMessageProcessor;
 
         public Manager(RuntimeConfiguration runtimeConfiguration) : base(runtimeConfiguration)
         {
@@ -32,10 +33,8 @@ namespace Flintr_Runner.Runners
         {
             checkMessages();
             workerHealthCheck();
-            ///////////////////////////////
-            EchoJob echoJob = new EchoJob(SharedLogger, JobStrategy.RunOnAll, "TEST BROADCAST");
-            jobDispatchManager.DispatchJob(echoJob);
-            ///////////////////////////////
+            jobDispatchManager.ProcessJobQueue();
+            apiMessageProcessor.CheckMessages();
             Thread.Sleep(1000);
         }
 
@@ -43,10 +42,16 @@ namespace Flintr_Runner.Runners
         {
             workerRegistrationPool = new WorkerRegistrationPool(runtimeConfiguration);
             jobDispatchManager = new JobDispatchManager(runtimeConfiguration, workerRegistrationPool);
+            apiMessageProcessor = new ApiMessageProcessor(runtimeConfiguration, workerRegistrationPool, jobDispatchManager);
             workerRegistrationManager = new WorkerRegistrationManager(runtimeConfiguration, workerRegistrationPool);
             workerMessageProcessor = new WorkerMessageProcessor(runtimeConfiguration, workerRegistrationPool);
             Task.Run(() => workerRegistrationManager.ListenAsync());
+            Task.Run(() => apiMessageProcessor.ListenAsync());
             SharedLogger.Msg($"Manager is listening for registrations at {runtimeConfiguration.GetManagerBindAddress().ToString()}:{runtimeConfiguration.GetManagerComPort()}");
+            ///////////////////////////////
+            EchoJob echoJob = new EchoJob(SharedLogger, JobStrategy.RunOnOne, "TEST BROADCAST");
+            jobDispatchManager.QueueJob(echoJob);
+            ///////////////////////////////
         }
 
         private void checkMessages()
@@ -71,10 +76,9 @@ namespace Flintr_Runner.Runners
             workerRegistrationPool.LockRegistrationPool();
             foreach (WorkerRegistration wr in workerRegistrationPool.GetRegistrationPool())
             {
-                TimeSpan timeSinceLastHeartbeat = DateTime.Now.Subtract(wr.LastHeartBeat);
-                if (timeSinceLastHeartbeat > new TimeSpan(0, 0, 5))
+                if (wr.IsDead())
                 {
-                    SharedLogger.Warning($"Worker {wr.Name} has been dead for over {Math.Round(timeSinceLastHeartbeat.TotalSeconds, 0)} seconds!");
+                    SharedLogger.Warning($"Worker {wr.Name} is not responding.");
                 }
             }
             workerRegistrationPool.UnlockRegistrationPool();

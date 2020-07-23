@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Flintr_Runner
 {
-    internal class Program
+    public class Program
     {
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
             RuntimeConfiguration runtimeConfiguration = new RuntimeConfiguration();
             // For now run in standalone mode.
             RunStandalone(runtimeConfiguration);
         }
 
-        private static void RunStandalone(RuntimeConfiguration runtimeConfiguration)
+        public static void RunStandalone(RuntimeConfiguration runtimeConfiguration)
         {
             bool shouldRun = true;
             // Create a manager thread.

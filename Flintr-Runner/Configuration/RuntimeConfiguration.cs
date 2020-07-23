@@ -12,6 +12,7 @@ namespace Flintr_Runner.Configuration
         protected int workerThreads;
         protected IPAddress managerBindAddress;
         protected int managerConPort;
+        protected int managerExecPort;
         protected IPAddress workerConnectComAddress;
         protected int workerConnectComPort;
         protected int workerDeadHeartbeatTimeout;
@@ -25,6 +26,7 @@ namespace Flintr_Runner.Configuration
             workerThreads = 4;
             managerBindAddress = IPAddress.Parse("127.0.0.1");
             managerConPort = 4000;
+            managerExecPort = 3999;
             workerConnectComAddress = IPAddress.Parse("127.0.0.1");
             workerConnectComPort = 4000;
             workerDeadHeartbeatTimeout = 5;
@@ -63,6 +65,11 @@ namespace Flintr_Runner.Configuration
         public int GetWorkerHeartbeatTimeout()
         {
             return workerDeadHeartbeatTimeout;
+        }
+
+        public int GetManagerExecPort()
+        {
+            return managerExecPort;
         }
     }
 }

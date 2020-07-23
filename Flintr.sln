@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flintr-Runner", "Flintr-Run
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flintr-Runner-Test", "Flintr-Runner-Test\Flintr-Runner-Test.csproj", "{0A01001D-CADF-4758-8847-67D93D1121F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flintr-lib", "Flintr-lib\Flintr-lib.csproj", "{83DC15E4-DFCC-432D-9847-C4F6E0483482}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flintr-Interactive", "Flintr-Interactive\Flintr-Interactive.csproj", "{ADD5941A-E03D-4F8E-851E-625184EF933D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{0A01001D-CADF-4758-8847-67D93D1121F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A01001D-CADF-4758-8847-67D93D1121F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A01001D-CADF-4758-8847-67D93D1121F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83DC15E4-DFCC-432D-9847-C4F6E0483482}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83DC15E4-DFCC-432D-9847-C4F6E0483482}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83DC15E4-DFCC-432D-9847-C4F6E0483482}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83DC15E4-DFCC-432D-9847-C4F6E0483482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADD5941A-E03D-4F8E-851E-625184EF933D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADD5941A-E03D-4F8E-851E-625184EF933D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADD5941A-E03D-4F8E-851E-625184EF933D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADD5941A-E03D-4F8E-851E-625184EF933D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
