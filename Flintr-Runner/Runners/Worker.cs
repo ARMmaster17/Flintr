@@ -19,7 +19,8 @@ namespace Flintr_Runner.Runners
 
         public Worker(RuntimeConfiguration runtimeConfiguration) : base(runtimeConfiguration)
         {
-            managerMessageProcessor = new ManagerMessageProcessor(runtimeConfiguration);
+            workerName = "Unassigned";
+            managerMessageProcessor = new ManagerMessageProcessor(runtimeConfiguration, workerName);
         }
 
         public override void runWork()
@@ -45,17 +46,17 @@ namespace Flintr_Runner.Runners
         private void getNewPort(IPAddress managerAddress, int registrationPort)
         {
             TCPClient registrationConnection = new TCPClient(managerAddress, registrationPort);
-            SharedLogger.Debug($"Registration sent to {managerAddress}:{registrationPort}.");
+            SharedLogger.Debug(workerName, "Registration Service", $"Registration sent to {managerAddress}:{registrationPort}.");
             registrationConnection.Send("REGISTER");
             //while (!registrationConnection.MessageIsAvailable())
             //{
             //    Thread.Sleep(500);
             //}
-            string registrationInfo = null;
-            registrationInfo = registrationConnection.Receive();
-            SharedLogger.Msg($"Registered to manager server at {managerAddress.ToString()}");
-            SharedLogger.Debug(registrationInfo);
-            assignedPort = Convert.ToInt32(registrationInfo);
+            string[] registrationInfo = registrationConnection.Receive().Split('|');
+            workerName = registrationInfo[1];
+            managerMessageProcessor.UpdateRunnerName(workerName);
+            SharedLogger.Msg(workerName, "Registration Service", $"Registered to manager server at {managerAddress.ToString()} with port assignment {registrationInfo[0]}.");
+            assignedPort = Convert.ToInt32(registrationInfo[0]);
         }
 
         private void checkForMessages()

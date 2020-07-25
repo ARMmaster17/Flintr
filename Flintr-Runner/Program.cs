@@ -36,7 +36,7 @@ namespace Flintr_Runner
             workerPool.RunAllWorkersAsync();
             Console.CancelKeyPress += (s, e) =>
             {
-                runtimeConfiguration.GetLoggerInstance().Error("Console kill command received. Forcing shutdown.");
+                runtimeConfiguration.GetLoggerInstance().Error("Runner", "Overwatch", "Console kill command received. Forcing shutdown.");
                 workerPool.KillAllWorkers();
                 shouldRun = false;
             };

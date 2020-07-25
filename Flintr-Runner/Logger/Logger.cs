@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Flintr_Runner.Logger
 {
@@ -32,6 +33,11 @@ namespace Flintr_Runner.Logger
             outputLocked = false;
         }
 
+        public int GetLogLevel()
+        {
+            return logLevel;
+        }
+
         public void SetLogLevel(int logLevel)
         {
             this.logLevel = logLevel;
@@ -41,9 +47,14 @@ namespace Flintr_Runner.Logger
         /// Display a debug message. Shown when logLevel is 3 or greater.
         /// </summary>
         /// <param name="message">Message to display in console output and log file.</param>
-        public void Debug(string message)
+        public void Debug(string runnerName, string message)
         {
-            if (logLevel >= 3) writeMessage(TAG_DEBUG, message, COLOR_DEBUG);
+            if (logLevel >= 3) writeMessage(TAG_DEBUG, message, COLOR_DEBUG, runnerName, null);
+        }
+
+        public void Debug(string runnerName, string jobName, string message)
+        {
+            if (logLevel >= 3) writeMessage(TAG_DEBUG, message, COLOR_DEBUG, runnerName, jobName);
         }
 
         /// <summary>
@@ -51,9 +62,14 @@ namespace Flintr_Runner.Logger
         /// greater.
         /// </summary>
         /// <param name="message">Message to display in console output and log file.</param>
-        public void Msg(string message)
+        public void Msg(string runnerName, string message)
         {
-            if (logLevel >= 2) writeMessage(TAG_MSG, message, COLOR_MSG);
+            if (logLevel >= 2) writeMessage(TAG_MSG, message, COLOR_MSG, runnerName, null);
+        }
+
+        public void Msg(string runnerName, string jobName, string message)
+        {
+            if (logLevel >= 2) writeMessage(TAG_MSG, message, COLOR_MSG, runnerName, jobName);
         }
 
         /// <summary>
@@ -61,9 +77,14 @@ namespace Flintr_Runner.Logger
         /// greater.
         /// </summary>
         /// <param name="message">Message to display in console output and log file.</param>
-        public void Warning(string message)
+        public void Warning(string runnerName, string message)
         {
-            if (logLevel >= 1) writeMessage(TAG_WARNING, message, COLOR_WARNING);
+            if (logLevel >= 1) writeMessage(TAG_WARNING, message, COLOR_WARNING, runnerName, null);
+        }
+
+        public void Warning(string runnerName, string jobName, string message)
+        {
+            if (logLevel >= 1) writeMessage(TAG_WARNING, message, COLOR_WARNING, runnerName, jobName);
         }
 
         /// <summary>
@@ -71,9 +92,14 @@ namespace Flintr_Runner.Logger
         /// is 0 or greater.
         /// </summary>
         /// <param name="message">Message to display in console output and log file.</param>
-        public void Error(string message)
+        public void Error(string runnerName, string message)
         {
-            if (logLevel >= 0) writeMessage(TAG_ERROR, message, COLOR_ERROR);
+            if (logLevel >= 0) writeMessage(TAG_ERROR, message, COLOR_ERROR, runnerName, null);
+        }
+
+        public void Error(string runnerName, string jobName, string message)
+        {
+            if (logLevel >= 0) writeMessage(TAG_ERROR, message, COLOR_ERROR, runnerName, jobName);
         }
 
         /// <summary>
@@ -81,9 +107,14 @@ namespace Flintr_Runner.Logger
         /// of the user-specified logLevel.
         /// </summary>
         /// <param name="message">Message to display in console output and log file.</param>
-        public void Critical(string message)
+        public void Critical(string runnerName, string message)
         {
-            writeMessage(TAG_CRITICAL, message, COLOR_CRITICAL);
+            writeMessage(TAG_CRITICAL, message, COLOR_CRITICAL, runnerName, null);
+        }
+
+        public void Critical(string runnerName, string jobName, string message)
+        {
+            writeMessage(TAG_CRITICAL, message, COLOR_CRITICAL, runnerName, jobName);
         }
 
         /// <summary>
@@ -93,12 +124,17 @@ namespace Flintr_Runner.Logger
         /// <param name="level">The severity level of the message.</param>
         /// <param name="message">Message to write.</param>
         /// <param name="color">Text color to use.</param>
-        private void writeMessage(string level, string message, ConsoleColor color)
+        private void writeMessage(string level, string message, ConsoleColor color, string runnerName, string jobName)
         {
-            while (outputLocked) { }
+            while (outputLocked)
+            {
+                Thread.Sleep(100);
+            }
             outputLocked = true;
             Console.ForegroundColor = color;
-            Console.WriteLine("[{0}] {1} - {2}", level, DateTime.Now, message);
+            if (jobName == null && runnerName == null) Console.WriteLine($"[{level}] {DateTime.Now} - {message}");
+            else if (jobName == null) Console.WriteLine($"[{level}] {DateTime.Now} - [{runnerName}]: {message}");
+            else Console.WriteLine($"[{level}] {DateTime.Now} - [{runnerName}/{jobName}]: {message}");
             Console.ForegroundColor = DEFAULT_CONSOLE_FOREGROUND_COLOR;
             outputLocked = false;
         }

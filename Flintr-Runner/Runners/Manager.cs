@@ -46,7 +46,7 @@ namespace Flintr_Runner.Runners
             workerMessageProcessor = new WorkerMessageProcessor(runtimeConfiguration, workerRegistrationPool);
             Task.Run(() => workerRegistrationManager.ListenAsync());
             Task.Run(() => apiMessageProcessor.ListenAsync());
-            SharedLogger.Msg($"Manager is listening for registrations at {runtimeConfiguration.GetManagerBindAddress().ToString()}:{runtimeConfiguration.GetManagerComPort()}");
+            SharedLogger.Msg("Manager", "API", $"Manager is listening for registrations at {runtimeConfiguration.GetManagerBindAddress().ToString()}:{runtimeConfiguration.GetManagerComPort()}");
         }
 
         private void checkMessages()
@@ -73,7 +73,7 @@ namespace Flintr_Runner.Runners
             {
                 if (wr.IsDead())
                 {
-                    SharedLogger.Warning($"Worker {wr.Name} is not responding.");
+                    SharedLogger.Warning("Manager", "Health Check", $"Worker {wr.Name} is not responding.");
                 }
             }
             workerRegistrationPool.UnlockRegistrationPool();

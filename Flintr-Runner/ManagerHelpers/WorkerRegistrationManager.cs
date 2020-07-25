@@ -35,11 +35,11 @@ namespace Flintr_Runner.ManagerHelpers
             {
                 TCPClient newClient = tcpServer.WaitForNextConnection();
                 WorkerRegistration registration = getNewWorkerRegistrationInformation(newClient.Receive());
-                newClient.Send(registration.Port.ToString());
-                sharedLogger.Debug($"Transferring {registration.Name} to new connection...");
+                newClient.Send($"{registration.Port.ToString()}|{registration.Name}");
+                sharedLogger.Debug("Manager", "Worker Registration Service", $"Transferring {registration.Name} to new connection...");
                 TCPServer newConnection = new TCPServer(managerBindIP, registration.Port);
                 registration.ClientServer = newConnection.WaitForNextConnection();
-                sharedLogger.Debug($"Connection successful on new channel.");
+                sharedLogger.Debug("Manager", "Worker Registration Service", $"Connection successful on new channel.");
             }
         }
 
@@ -51,7 +51,7 @@ namespace Flintr_Runner.ManagerHelpers
         private WorkerRegistration getNewWorkerRegistrationInformation(string infoString)
         {
             WorkerRegistration newRegistration = registrationPool.RegisterNewWorker();
-            sharedLogger.Msg($"New worker registration '{newRegistration.Name}' on port {newRegistration.Port}");
+            sharedLogger.Msg("Manager", "Worker Registration Service", $"New worker registration '{newRegistration.Name}' on port {newRegistration.Port}");
             return newRegistration;
         }
     }

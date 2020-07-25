@@ -20,7 +20,7 @@ namespace Flintr_lib.Jobs
 
         public override void Execute()
         {
-            Console.WriteLine(echoLine);
+            WriteLine(echoLine);
         }
     }
 }

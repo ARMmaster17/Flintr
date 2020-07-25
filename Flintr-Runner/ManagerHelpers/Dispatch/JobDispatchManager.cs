@@ -31,9 +31,10 @@ namespace Flintr_Runner.ManagerHelpers.Dispatch
         public void QueueJob(Job job)
         {
             jobQueue.Enqueue(job);
+            sharedLogger.Msg("Manager", "Job Dispatcher", $"Job of type {job.GetType().Name} was successfully enqueued.");
             if (!workersAvailable())
             {
-                sharedLogger.Warning("A job was queued but no workers are available!");
+                sharedLogger.Warning("Manager", "Job Dispatcher", "A job was queued but no workers are available!");
             }
         }
 
@@ -70,9 +71,10 @@ namespace Flintr_Runner.ManagerHelpers.Dispatch
 
         private DispatchedJob dispatchToSpecified(List<WorkerRegistration> workers, Job job)
         {
+            int jobId = getNextJobId();
             if (workers.Count == 0)
             {
-                sharedLogger.Error("No workers available to accept dispatched job!");
+                sharedLogger.Error("Manager", "Job Dispatcher", "No workers available to accept dispatched job!");
                 return null;
             }
             List<DispatchedTask> jobSpecificTasksDispatched = new List<DispatchedTask>();
@@ -82,13 +84,13 @@ namespace Flintr_Runner.ManagerHelpers.Dispatch
                 {
                     if (workers.Count == 1)
                     {
-                        sharedLogger.Error($"Worker '{worker.Name}' has a faulty registration. Queuing job again.");
+                        sharedLogger.Error("Manager", "Job Dispatcher", $"Worker '{worker.Name}' has a faulty registration. Queuing job again.");
                         QueueJob(job);
                         return null;
                     }
                     else
                     {
-                        sharedLogger.Warning($"Worker '{worker.Name}' has a faulty registration. Skipping...");
+                        sharedLogger.Warning("Manager", "Job Dispatcher", $"Worker '{worker.Name}' has a faulty registration. Skipping...");
                     }
                 }
                 int taskId = getNextTaskId();
@@ -97,8 +99,10 @@ namespace Flintr_Runner.ManagerHelpers.Dispatch
                 DispatchedTask taskTracker = new DispatchedTask(taskId, worker.Name);
                 jobSpecificTasksDispatched.Add(taskTracker);
                 dispatchedTasks.Add(taskTracker);
+                sharedLogger.Debug("Manager", "Job Dispatcher", $"Task ID {taskId} of Job ID {jobId} was dispatched to {worker.Name}.");
             }
-            return new DispatchedJob(jobSpecificTasksDispatched, job, getNextJobId());
+            sharedLogger.Msg("Manager", "Job Dispatcher", $"Job of type {job.GetType().Name} with ID {jobId} was dispatched.");
+            return new DispatchedJob(jobSpecificTasksDispatched, job, jobId);
         }
 
         private int getNextJobId()
