@@ -1,13 +1,18 @@
-﻿using System;
+﻿using Flintr_Runner.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
 namespace Flintr_Runner.Configuration
 {
+    /// <summary>
+    /// Contains the active runtime configuration. In the future, this class will pull from
+    /// settings files, environment variable, and command-line arguments in that order.
+    /// </summary>
     public class RuntimeConfiguration
     {
-        protected Logger.Logger logger;
+        protected Logger logger;
         protected int logLevel;
         protected int workerThreads;
         protected IPAddress managerBindAddress;
@@ -21,7 +26,7 @@ namespace Flintr_Runner.Configuration
         {
             // Get the log level setting.
             logLevel = 3;
-            logger = new Logger.Logger(logLevel);
+            logger = new Logger(logLevel);
             // Set the number of worker threads.
             workerThreads = 4;
             managerBindAddress = IPAddress.Parse("127.0.0.1");
@@ -32,7 +37,7 @@ namespace Flintr_Runner.Configuration
             workerDeadHeartbeatTimeout = 5;
         }
 
-        public Logger.Logger GetLoggerInstance()
+        public Logger GetLoggerInstance()
         {
             return logger;
         }

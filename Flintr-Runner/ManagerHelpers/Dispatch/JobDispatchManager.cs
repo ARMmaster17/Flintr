@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Flintr_Runner.Logging;
 
 namespace Flintr_Runner.ManagerHelpers.Dispatch
 {
     public class JobDispatchManager
     {
         private WorkerRegistrationPool workerPool;
-        private Logger.Logger sharedLogger;
+        private Logger sharedLogger;
         private int nextJobId;
         private int nextTaskId;
         private List<DispatchedTask> dispatchedTasks;

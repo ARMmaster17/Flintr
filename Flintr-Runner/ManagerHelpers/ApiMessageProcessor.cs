@@ -2,6 +2,7 @@
 using Flintr_Runner.Configuration;
 using Flintr_Runner.ManagerHelpers.API;
 using Flintr_Runner.ManagerHelpers.Dispatch;
+using Flintr_Runner.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +16,7 @@ namespace Flintr_Runner.ManagerHelpers
         private WorkerRegistrationPool workerPool;
         private JobDispatchManager jobDispatchManager;
         private List<TCPClient> activeClients;
-        private Logger.Logger sharedLogger;
+        private Logger sharedLogger;
         private ReportProcessor reportProcessor;
         private CommandProcessor commandProcessor;
 

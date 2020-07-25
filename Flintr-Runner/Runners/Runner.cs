@@ -1,4 +1,5 @@
 ﻿using Flintr_Runner.Configuration;
+using Flintr_Runner.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +8,7 @@ namespace Flintr_Runner.Runners
 {
     public abstract class Runner
     {
-        protected Logger.Logger SharedLogger;
+        protected Logger SharedLogger;
 
         private bool isRunning;
 

@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Flintr_Runner.ManagerHelpers
 {
+    /// <summary>
+    /// Holds registration values for a worker within the cluster.
+    /// </summary>
     public class WorkerRegistration
     {
         public string Name;
@@ -22,10 +25,10 @@ namespace Flintr_Runner.ManagerHelpers
             Port = port;
         }
 
-        public bool IsDead()
+        public bool IsDead(TimeSpan deadWorkerThreshold)
         {
             TimeSpan timeSinceLastHeartbeat = DateTime.Now.Subtract(LastHeartBeat);
-            return timeSinceLastHeartbeat > new TimeSpan(0, 0, 5);
+            return timeSinceLastHeartbeat > deadWorkerThreshold;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Flintr_lib.Communication;
 using Flintr_lib.Jobs;
 using Flintr_Runner.Configuration;
+using Flintr_Runner.Logging;
 using Flintr_Runner.ManagerHelpers.Dispatch;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Flintr_Runner.WorkerHelpers
 {
     public class ManagerMessageProcessor
     {
-        private Logger.Logger logger;
+        private Logger logger;
         private string runnerName;
 
         public ManagerMessageProcessor(RuntimeConfiguration runtimeConfiguration, string runnerName)
