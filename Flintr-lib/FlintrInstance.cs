@@ -44,14 +44,14 @@ namespace Flintr_lib
 
         public JobDetail ExecuteRawJob(Job job)
         {
-            managerConnection.Send($"EXECUTE {job.GetType().AssemblyQualifiedName}");
+            managerConnection.Send("EXECUTE");
             managerConnection.SendObject(job);
             return managerConnection.ReceiveObject<JobDetail>();
         }
 
         public void QueueRawJob(Job job)
         {
-            managerConnection.Send($"QueueJob {job.GetType().AssemblyQualifiedName}");
+            managerConnection.Send($"QUEUEJOB");
             managerConnection.SendObject(job);
         }
     }

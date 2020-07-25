@@ -7,9 +7,14 @@ namespace Flintr_lib.Reports
     [Serializable()]
     public class JobDetail
     {
-        public int JobID { get; protected set; }
-        public bool IsComplete { get; protected set; }
+        public int JobID { get; set; }
+        public bool IsComplete { get; set; }
 
+        public JobDetail()
+        {
+
+        }
+        
         public JobDetail(int jobId, bool isComplete)
         {
             JobID = jobId;

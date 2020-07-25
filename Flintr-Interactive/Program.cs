@@ -26,7 +26,8 @@ namespace Flintr_Interactive
                 string input = Console.ReadLine();
                 if (input == "") break;
                 EchoJob ej = new EchoJob(JobStrategy.RunOnAll, input);
-                instance.QueueRawJob(ej);
+                JobDetail jd = instance.ExecuteRawJob(ej);
+                Console.WriteLine($"Job queued with ID '{jd.JobID}'");
             }
         }
     }

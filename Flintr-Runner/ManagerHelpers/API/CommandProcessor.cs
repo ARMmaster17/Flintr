@@ -20,11 +20,7 @@ namespace Flintr_Runner.ManagerHelpers.API
 
         public void ExecuteJob(TCPClient client, string rawCommand)
         {
-            string className = Regex.Replace(rawCommand, @"^EXECUTE ", "");
-            Type jobType = getJobClassName(className);
-            var mi = typeof(TCPClient).GetMethod("RecieveObject");
-            var roRef = mi.MakeGenericMethod(jobType);
-            dynamic job = Convert.ChangeType(roRef.Invoke(client, null), jobType);
+            Job job = client.ReceiveObject<Job>();
             DispatchedJob dispatchedJob = jobDispatchManager.DispatchJob(job);
             JobDetail jobDetail = new JobDetail(dispatchedJob.JobID, false);
             client.SendObject<JobDetail>(jobDetail);
@@ -32,11 +28,7 @@ namespace Flintr_Runner.ManagerHelpers.API
 
         public void QueueJob(TCPClient client, string rawCommand)
         {
-            string className = Regex.Replace(rawCommand, @"^QUEUEJOB ", "");
-            Type jobType = getJobClassName(className);
-            var mi = typeof(TCPClient).GetMethod("RecieveObject");
-            var roRef = mi.MakeGenericMethod(jobType);
-            dynamic job = Convert.ChangeType(roRef.Invoke(client, null), jobType);
+            Job job = client.ReceiveObject<Job>();
             jobDispatchManager.QueueJob(job);
         }
 

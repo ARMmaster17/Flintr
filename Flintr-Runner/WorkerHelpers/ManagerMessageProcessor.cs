@@ -27,7 +27,6 @@ namespace Flintr_Runner.WorkerHelpers
         private void processExecuteCommand(string rawCommand, TCPClient client)
         {
             string className = Regex.Replace(rawCommand, @"^EXECUTE\[\d+\] ", "");
-            Console.WriteLine($"RECEIVED JOB CLASS OF: {className}");
             Type jobType = Type.GetType(className);
             var mi = typeof(TCPClient).GetMethod("ReceiveObject");
             var roRef = mi.MakeGenericMethod(jobType);
