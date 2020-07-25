@@ -1,4 +1,4 @@
-﻿using Flintr_Runner.Communication;
+﻿using Flintr_lib.Communication;
 using System;
 using System.Collections.Generic;
 using System.Net;

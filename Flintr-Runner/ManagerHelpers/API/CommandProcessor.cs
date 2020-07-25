@@ -1,8 +1,11 @@
-﻿using Flintr_Runner.Communication;
+﻿using Flintr_lib.Communication;
+using Flintr_lib.Jobs;
+using Flintr_lib.Reports;
 using Flintr_Runner.ManagerHelpers.Dispatch;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Flintr_Runner.ManagerHelpers.API
 {
@@ -15,15 +18,31 @@ namespace Flintr_Runner.ManagerHelpers.API
             this.jobDispatchManager = jobDispatchManager;
         }
 
-        public void ExecuteJob(TCPClient client)
+        public void ExecuteJob(TCPClient client, string rawCommand)
         {
-            DispatchedJob dispatchedJob = jobDispatchManager.DispatchJob(client.RecieveObject<Job>());
-            client.SendObject(dispatchedJob);
+            string className = Regex.Replace(rawCommand, @"^EXECUTE ", "");
+            Type jobType = getJobClassName(className);
+            var mi = typeof(TCPClient).GetMethod("RecieveObject");
+            var roRef = mi.MakeGenericMethod(jobType);
+            dynamic job = Convert.ChangeType(roRef.Invoke(client, null), jobType);
+            DispatchedJob dispatchedJob = jobDispatchManager.DispatchJob(job);
+            JobDetail jobDetail = new JobDetail(dispatchedJob.JobID, false);
+            client.SendObject<JobDetail>(jobDetail);
         }
 
-        public void QueueJob(TCPClient client)
+        public void QueueJob(TCPClient client, string rawCommand)
         {
-            jobDispatchManager.QueueJob(client.RecieveObject<Job>());
+            string className = Regex.Replace(rawCommand, @"^QUEUEJOB ", "");
+            Type jobType = getJobClassName(className);
+            var mi = typeof(TCPClient).GetMethod("RecieveObject");
+            var roRef = mi.MakeGenericMethod(jobType);
+            dynamic job = Convert.ChangeType(roRef.Invoke(client, null), jobType);
+            jobDispatchManager.QueueJob(job);
+        }
+
+        private Type getJobClassName(string className)
+        {
+            return Type.GetType(className);
         }
     }
 }

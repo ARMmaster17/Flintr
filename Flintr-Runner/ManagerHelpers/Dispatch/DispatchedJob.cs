@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Flintr_lib.Jobs;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,11 +9,13 @@ namespace Flintr_Runner.ManagerHelpers.Dispatch
     {
         private List<DispatchedTask> subTasks;
         private Job baseJob;
+        public int JobID { get; protected set; }
 
-        public DispatchedJob(List<DispatchedTask> dispatchedTasks, Job job)
+        public DispatchedJob(List<DispatchedTask> dispatchedTasks, Job job, int jobId)
         {
             baseJob = job;
             subTasks = dispatchedTasks;
+            JobID = jobId;
         }
 
         public bool IsComplete()

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Flintr_lib;
+using Flintr_lib.Jobs;
 using Flintr_lib.Reports;
 using Flintr_Runner;
 
@@ -20,7 +21,13 @@ namespace Flintr_Interactive
             Console.WriteLine("Probing for first worker information.");
             WorkerDetail wd = instance.GetWorkerDetails("worker-1");
             Console.WriteLine($"Worker Info:\t{wd.Name}\t{wd.AssignedPort}\t{wd.LastReportedHeartbeat}");
-            Console.ReadLine();
+            while (true)
+            {
+                string input = Console.ReadLine();
+                if (input == "") break;
+                EchoJob ej = new EchoJob(JobStrategy.RunOnAll, input);
+                instance.QueueRawJob(ej);
+            }
         }
     }
 }

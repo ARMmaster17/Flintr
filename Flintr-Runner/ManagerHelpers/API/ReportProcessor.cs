@@ -1,10 +1,10 @@
 ﻿using Flintr_lib.Reports;
-using Flintr_Runner.Communication;
 using Flintr_Runner.ManagerHelpers.Dispatch;
 using System;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Flintr_lib.Communication;
 
 namespace Flintr_Runner.ManagerHelpers.API
 {
@@ -35,7 +35,7 @@ namespace Flintr_Runner.ManagerHelpers.API
             string specificRequest = Regex.Replace(rawRequest, @"^LISTWORKER ", "");
             string workerIndex = specificRequest;
             WorkerRegistration wr = workerRegistrationPool.GetRegistrationPool().Find(o => o.Name == workerIndex);
-            client.SendObject(new WorkerDetail(wr.Name, wr.Port, wr.LastHeartBeat));
+            client.SendObject<WorkerDetail>(new WorkerDetail(wr.Name, wr.Port, wr.LastHeartBeat));
         }
     }
 }

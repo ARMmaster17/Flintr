@@ -1,4 +1,4 @@
-﻿using Flintr_Runner.Communication;
+﻿using Flintr_lib.Communication;
 using Flintr_Runner.Configuration;
 using Flintr_Runner.ManagerHelpers.API;
 using Flintr_Runner.ManagerHelpers.Dispatch;
@@ -22,7 +22,7 @@ namespace Flintr_Runner.ManagerHelpers
         public ApiMessageProcessor(RuntimeConfiguration runtimeConfiguration, WorkerRegistrationPool workerRegistrationPool, JobDispatchManager jobDispatchManager)
         {
             sharedLogger = runtimeConfiguration.GetLoggerInstance();
-            apiServer = new TCPServer(runtimeConfiguration.GetManagerBindAddress(), runtimeConfiguration.GetManagerExecPort(), runtimeConfiguration);
+            apiServer = new TCPServer(runtimeConfiguration.GetManagerBindAddress(), runtimeConfiguration.GetManagerExecPort());
             workerPool = workerRegistrationPool;
             this.jobDispatchManager = jobDispatchManager;
             reportProcessor = new ReportProcessor(workerRegistrationPool, jobDispatchManager);
@@ -52,8 +52,8 @@ namespace Flintr_Runner.ManagerHelpers
         private void processMessage(TCPClient client, string rawCommand)
         {
             if (ReportProcessor.IsReportRequest(rawCommand)) reportProcessor.ProcessReportRequest(client, rawCommand);
-            else if (Regex.IsMatch(rawCommand, @"^EXECUTE$")) commandProcessor.ExecuteJob(client);
-            else if (Regex.IsMatch(rawCommand, @"^QUEUEJOB$")) commandProcessor.QueueJob(client);
+            else if (Regex.IsMatch(rawCommand, @"^EXECUTE$")) commandProcessor.ExecuteJob(client, rawCommand);
+            else if (Regex.IsMatch(rawCommand, @"^QUEUEJOB$")) commandProcessor.QueueJob(client, rawCommand);
         }
     }
 }

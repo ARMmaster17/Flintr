@@ -1,21 +1,18 @@
-﻿using Flintr_Runner.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Flintr_Runner.Communication
+namespace Flintr_lib.Communication
 {
     public class TCPServer
     {
         private TcpListener listener;
-        private Logger.Logger sharedLogger;
 
-        public TCPServer(IPAddress bindAddress, int bindPort, RuntimeConfiguration runtimeConfiguration)
+        public TCPServer(IPAddress bindAddress, int bindPort)
         {
-            sharedLogger = runtimeConfiguration.GetLoggerInstance();
             IPEndPoint endpoint = new IPEndPoint(bindAddress, bindPort);
             listener = new TcpListener(endpoint);
             listener.Start();

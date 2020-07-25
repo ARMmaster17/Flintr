@@ -1,7 +1,9 @@
-﻿using Flintr_Runner.Configuration;
+﻿using Flintr_lib.Jobs;
+using Flintr_Runner.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Flintr_Runner.ManagerHelpers.Dispatch
 {
@@ -76,13 +78,27 @@ namespace Flintr_Runner.ManagerHelpers.Dispatch
             List<DispatchedTask> jobSpecificTasksDispatched = new List<DispatchedTask>();
             foreach (WorkerRegistration worker in workers)
             {
+                if (worker == null || worker.ClientServer == null)
+                {
+                    if (workers.Count == 1)
+                    {
+                        sharedLogger.Error($"Worker '{worker.Name}' has a faulty registration. Queuing job again.");
+                        QueueJob(job);
+                        return null;
+                    }
+                    else
+                    {
+                        sharedLogger.Warning($"Worker '{worker.Name}' has a faulty registration. Skipping...");
+                    }
+                }
                 int taskId = getNextTaskId();
-                worker.ClientServer.Send(job.GetComLine(taskId, ""));
+                worker.ClientServer.Send($"EXECUTE[{taskId}] {job.GetType().AssemblyQualifiedName}");
+                worker.ClientServer.SendObject(job);
                 DispatchedTask taskTracker = new DispatchedTask(taskId, worker.Name);
                 jobSpecificTasksDispatched.Add(taskTracker);
                 dispatchedTasks.Add(taskTracker);
             }
-            return new DispatchedJob(jobSpecificTasksDispatched, job);
+            return new DispatchedJob(jobSpecificTasksDispatched, job, getNextJobId());
         }
 
         private int getNextJobId()

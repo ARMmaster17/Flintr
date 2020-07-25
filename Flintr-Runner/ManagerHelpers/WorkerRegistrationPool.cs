@@ -1,5 +1,4 @@
-﻿using Flintr_Runner.Communication;
-using Flintr_Runner.Configuration;
+﻿using Flintr_Runner.Configuration;
 using Flintr_Runner.ManagerHelpers;
 using System;
 using System.Collections.Generic;

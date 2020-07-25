@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Flintr_Runner.ManagerHelpers.Dispatch
+namespace Flintr_lib.Jobs
 {
     public enum JobStrategy
     {

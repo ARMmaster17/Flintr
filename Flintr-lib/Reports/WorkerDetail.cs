@@ -5,13 +5,16 @@ using System.Text;
 
 namespace Flintr_lib.Reports
 {
-    [Serializable()]
     public class WorkerDetail
     {
-        public string Name { get; private set; }
-        public int AssignedPort { get; private set; }
+        public string Name { get; set; }
+        public int AssignedPort { get; set; }
 
-        public DateTime LastReportedHeartbeat { get; private set; }
+        public DateTime LastReportedHeartbeat { get; set; }
+
+        public WorkerDetail()
+        {
+        }
 
         public WorkerDetail(string name, int assignedPort, DateTime lastReportedHeartBeat)
         {

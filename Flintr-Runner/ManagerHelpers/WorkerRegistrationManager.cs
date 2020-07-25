@@ -1,4 +1,4 @@
-﻿using Flintr_Runner.Communication;
+﻿using Flintr_lib.Communication;
 using Flintr_Runner.Configuration;
 using Flintr_Runner.ManagerHelpers;
 using System;
@@ -21,7 +21,7 @@ namespace Flintr_Runner.ManagerHelpers
         public WorkerRegistrationManager(RuntimeConfiguration runtimeConfiguration, WorkerRegistrationPool workerRegistrationPool)
         {
             managerBindIP = runtimeConfiguration.GetManagerBindAddress();
-            tcpServer = new TCPServer(managerBindIP, runtimeConfiguration.GetManagerComPort(), runtimeConfiguration);
+            tcpServer = new TCPServer(managerBindIP, runtimeConfiguration.GetManagerComPort());
             shouldListen = false;
             registrationPool = workerRegistrationPool;
             sharedLogger = runtimeConfiguration.GetLoggerInstance();
@@ -37,7 +37,7 @@ namespace Flintr_Runner.ManagerHelpers
                 WorkerRegistration registration = getNewWorkerRegistrationInformation(newClient.Receive());
                 newClient.Send(registration.Port.ToString());
                 sharedLogger.Debug($"Transferring {registration.Name} to new connection...");
-                TCPServer newConnection = new TCPServer(managerBindIP, registration.Port, runtimeConfiguration);
+                TCPServer newConnection = new TCPServer(managerBindIP, registration.Port);
                 registration.ClientServer = newConnection.WaitForNextConnection();
                 sharedLogger.Debug($"Connection successful on new channel.");
             }

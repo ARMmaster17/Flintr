@@ -1,7 +1,6 @@
-﻿using Flintr_Runner.Communication;
+﻿using Flintr_lib.Jobs;
 using Flintr_Runner.Configuration;
 using Flintr_Runner.Exceptions;
-using Flintr_Runner.Jobs;
 using Flintr_Runner.ManagerHelpers;
 using Flintr_Runner.ManagerHelpers.Dispatch;
 using System;
@@ -48,10 +47,6 @@ namespace Flintr_Runner.Runners
             Task.Run(() => workerRegistrationManager.ListenAsync());
             Task.Run(() => apiMessageProcessor.ListenAsync());
             SharedLogger.Msg($"Manager is listening for registrations at {runtimeConfiguration.GetManagerBindAddress().ToString()}:{runtimeConfiguration.GetManagerComPort()}");
-            ///////////////////////////////
-            EchoJob echoJob = new EchoJob(SharedLogger, JobStrategy.RunOnOne, "TEST BROADCAST");
-            jobDispatchManager.QueueJob(echoJob);
-            ///////////////////////////////
         }
 
         private void checkMessages()

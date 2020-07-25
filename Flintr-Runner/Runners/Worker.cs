@@ -1,4 +1,4 @@
-﻿using Flintr_Runner.Communication;
+﻿using Flintr_lib.Communication;
 using Flintr_Runner.Configuration;
 using Flintr_Runner.WorkerHelpers;
 using System;
@@ -62,7 +62,7 @@ namespace Flintr_Runner.Runners
         {
             if (managerConnection.MessageIsAvailable())
             {
-                managerMessageProcessor.ProcessMessage(managerConnection.Receive());
+                managerMessageProcessor.ProcessMessage(managerConnection.Receive(), managerConnection);
             }
         }
     }

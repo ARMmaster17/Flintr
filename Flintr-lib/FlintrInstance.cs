@@ -1,4 +1,6 @@
-﻿using Flintr_lib.Reports;
+﻿using Flintr_lib.Communication;
+using Flintr_lib.Jobs;
+using Flintr_lib.Reports;
 using System;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -36,19 +38,21 @@ namespace Flintr_lib
         public WorkerDetail GetWorkerDetails(string workerName)
         {
             managerConnection.Send($"REPORT LISTWORKER {workerName}");
-            BinaryFormatter deserializer = new BinaryFormatter();
-            WorkerDetail workerDetail = (WorkerDetail)deserializer.Deserialize(managerConnection.GetNetworkStreamReader().BaseStream);
+            WorkerDetail workerDetail = managerConnection.ReceiveObject<WorkerDetail>();
             return workerDetail;
         }
 
-        public void ExecuteRawJobOne(string rawCommand)
+        public JobDetail ExecuteRawJob(Job job)
         {
-            managerConnection.Send($"EXECUTE ONE {rawCommand}");
+            managerConnection.Send($"EXECUTE {job.GetType().AssemblyQualifiedName}");
+            managerConnection.SendObject(job);
+            return managerConnection.ReceiveObject<JobDetail>();
         }
 
-        public void ExecuteRawJobALL(string rawCommand)
+        public void QueueRawJob(Job job)
         {
-            managerConnection.Send($"EXECUTE ALL {rawCommand}");
+            managerConnection.Send($"QueueJob {job.GetType().AssemblyQualifiedName}");
+            managerConnection.SendObject(job);
         }
     }
 }
