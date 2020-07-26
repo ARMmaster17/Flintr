@@ -44,7 +44,7 @@ namespace Flintr_lib.Communication
         }
 
         /// <summary>
-        /// De-initializer. Cleans up connections before handoff to garbage collector.
+        /// De-initializer. Cleans up connections before hand-off to garbage collector.
         /// </summary>
         ~TCPServer()
         {
@@ -76,7 +76,7 @@ namespace Flintr_lib.Communication
             }
             catch (IOException e)
             {
-                throw new IOException("A network error occured while establishing a new connection with a client.", e);
+                throw new IOException("A network error occurred while establishing a new connection with a client.", e);
             }
 
             return client;
