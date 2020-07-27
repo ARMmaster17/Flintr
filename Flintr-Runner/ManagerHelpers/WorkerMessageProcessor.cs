@@ -14,26 +14,29 @@ namespace Flintr_Runner.ManagerHelpers
     {
         private Logger sharedLogger;
         private WorkerRegistrationPool workerRegistrationPool;
+        private DataStoreManager dataStoreManager;
 
         /// <summary>
         /// Default constructor with default settings.
         /// </summary>
         /// <param name="runtimeConfiguration">Active runtime configuration settings for current session.</param>
         /// <param name="workerRegistrationPool">Active pool of workers to pull information from.</param>
-        public WorkerMessageProcessor(RuntimeConfiguration runtimeConfiguration, WorkerRegistrationPool workerRegistrationPool)
+        public WorkerMessageProcessor(RuntimeConfiguration runtimeConfiguration, WorkerRegistrationPool workerRegistrationPool, DataStoreManager dataStoreManager)
         {
             sharedLogger = runtimeConfiguration.GetLoggerInstance();
             this.workerRegistrationPool = workerRegistrationPool;
+            this.dataStoreManager = dataStoreManager;
         }
 
         /// <summary>
         /// Processes a message and dispatches any needed sub-tasks.
         /// </summary>
-        /// <param name="workerRegistration"></param>
-        /// <param name="rawCommand"></param>
+        /// <param name="workerRegistration">Registration for worker that sent the message.</param>
+        /// <param name="rawCommand">Command string sent by worker.</param>
         public void ProcessMessage(WorkerRegistration workerRegistration, string rawCommand)
         {
             if (Regex.IsMatch(rawCommand, @"^HEARTBEAT$")) updateHeartbeat(workerRegistration);
+            if (Regex.IsMatch(rawCommand, @"^VAR ")) dataStoreManager.ProcessCommand(rawCommand, workerRegistration);
         }
 
         private void updateHeartbeat(WorkerRegistration workerRegistration)

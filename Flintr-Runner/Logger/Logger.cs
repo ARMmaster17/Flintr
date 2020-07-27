@@ -9,7 +9,7 @@ namespace Flintr_Runner.Logging
     public class Logger
     {
         private readonly int logLevel;
-        private bool outputLocked;
+        private static readonly object ConsoleWriterLock = new object();
         private const ConsoleColor DEFAULT_CONSOLE_FOREGROUND_COLOR = ConsoleColor.White;
         private const string TAG_DEBUG = "DEBUG";
         private const string TAG_MSG = "MESSAGE";
@@ -29,7 +29,6 @@ namespace Flintr_Runner.Logging
         public Logger()
         {
             logLevel = DEFAULT_LOG_LEVEL;
-            outputLocked = false;
         }
 
         /// <summary>
@@ -39,7 +38,6 @@ namespace Flintr_Runner.Logging
         public Logger(int logLevel)
         {
             this.logLevel = logLevel;
-            outputLocked = false;
         }
 
         /// <summary>
@@ -192,18 +190,14 @@ namespace Flintr_Runner.Logging
         /// <param name="runnerName">Name of thread/runner that sent the message.</param>
         private void writeMessage(string level, string message, ConsoleColor color, string runnerName, string jobName)
         {
-            // TODO: Replace with lock(){} keywords.
-            while (outputLocked)
+            lock (ConsoleWriterLock)
             {
-                Thread.Sleep(100);
+                Console.ForegroundColor = color;
+                if (jobName == null && runnerName == null) Console.WriteLine($"[{level}] {DateTime.Now} - {message}");
+                else if (jobName == null) Console.WriteLine($"[{level}] {DateTime.Now} - [{runnerName}]: {message}");
+                else Console.WriteLine($"[{level}] {DateTime.Now} - [{runnerName}/{jobName}]: {message}");
+                Console.ForegroundColor = DEFAULT_CONSOLE_FOREGROUND_COLOR;
             }
-            outputLocked = true;
-            Console.ForegroundColor = color;
-            if (jobName == null && runnerName == null) Console.WriteLine($"[{level}] {DateTime.Now} - {message}");
-            else if (jobName == null) Console.WriteLine($"[{level}] {DateTime.Now} - [{runnerName}]: {message}");
-            else Console.WriteLine($"[{level}] {DateTime.Now} - [{runnerName}/{jobName}]: {message}");
-            Console.ForegroundColor = DEFAULT_CONSOLE_FOREGROUND_COLOR;
-            outputLocked = false;
         }
     }
 }
