@@ -23,6 +23,7 @@ namespace Flintr_Runner.Runners
         private JobDispatchManager jobDispatchManager;
         private TimeSpan workerHeartbeatTimeout;
         private ApiMessageProcessor apiMessageProcessor;
+        private DataStoreManager dataStoreManager;
 
         /// <summary>
         /// Initialize Manager with default settings, and import from runtime configuration as necessary.
@@ -64,7 +65,8 @@ namespace Flintr_Runner.Runners
             jobDispatchManager = new JobDispatchManager(runtimeConfiguration, workerRegistrationPool);
             apiMessageProcessor = new ApiMessageProcessor(runtimeConfiguration, workerRegistrationPool, jobDispatchManager);
             workerRegistrationManager = new WorkerRegistrationManager(runtimeConfiguration, workerRegistrationPool);
-            workerMessageProcessor = new WorkerMessageProcessor(runtimeConfiguration, workerRegistrationPool);
+            dataStoreManager = new DataStoreManager();
+            workerMessageProcessor = new WorkerMessageProcessor(runtimeConfiguration, workerRegistrationPool, dataStoreManager);
             Task.Run(() => workerRegistrationManager.ListenAsync());
             Task.Run(() => apiMessageProcessor.ListenAsync());
             SharedLogger.Msg("Manager", "API", $"Manager is listening for registrations at {runtimeConfiguration.GetManagerBindAddress().ToString()}:{runtimeConfiguration.GetManagerComPort()}");

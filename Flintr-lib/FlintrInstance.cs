@@ -2,6 +2,7 @@
 using Flintr_lib.Jobs;
 using Flintr_lib.Reports;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
@@ -10,7 +11,6 @@ namespace Flintr_lib
     /// <summary>
     /// Represents and manages a connection to a Flintr Manager instance.
     /// </summary>
-    /// <exception cref="IOException">When an internal network error occurs while establishing a connection with the Manager API interface.</exception>
     public sealed class FlintrInstance
     {
         private TCPClient managerConnection;
@@ -148,6 +148,31 @@ namespace Flintr_lib
             catch (Exception e)
             {
                 throw new IOException($"An internal network error occurred while receiving a worker status report.", e);
+            }
+        }
+
+        public List<WorkerDetail> GetAllWorkerDetails()
+        {
+            try
+            {
+                managerConnection.Send("REPORT LISTALLWORKERS");
+            }
+            catch (ArgumentException e)
+            {
+                // TODO: Fill in exception catching.
+            }
+            catch (IOException e)
+            {
+
+            }
+
+            try
+            {
+                return managerConnection.ReceiveObject<List<WorkerDetail>>();
+            }
+            catch (Exception e)
+            {
+                throw new IOException($"An internal network error occurred while receiving a worker list report.", e);
             }
         }
 

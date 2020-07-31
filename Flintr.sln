@@ -5,11 +5,13 @@ VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flintr-Runner", "Flintr-Runner\Flintr-Runner.csproj", "{D3B9E950-233C-4448-8C94-230496827DA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flintr-Runner-Test", "Flintr-Runner-Test\Flintr-Runner-Test.csproj", "{0A01001D-CADF-4758-8847-67D93D1121F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flintr-Runner-Test", "Flintr-Runner-Test\Flintr-Runner-Test.csproj", "{0A01001D-CADF-4758-8847-67D93D1121F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flintr-lib", "Flintr-lib\Flintr-lib.csproj", "{83DC15E4-DFCC-432D-9847-C4F6E0483482}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flintr-lib", "Flintr-lib\Flintr-lib.csproj", "{83DC15E4-DFCC-432D-9847-C4F6E0483482}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flintr-Interactive", "Flintr-Interactive\Flintr-Interactive.csproj", "{ADD5941A-E03D-4F8E-851E-625184EF933D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flintr-Interactive", "Flintr-Interactive\Flintr-Interactive.csproj", "{ADD5941A-E03D-4F8E-851E-625184EF933D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flintr-Administration", "Flintr-Administration\Flintr-Administration.csproj", "{2342CFB7-435A-4941-9CF4-C96F0E504471}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{ADD5941A-E03D-4F8E-851E-625184EF933D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADD5941A-E03D-4F8E-851E-625184EF933D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADD5941A-E03D-4F8E-851E-625184EF933D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2342CFB7-435A-4941-9CF4-C96F0E504471}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2342CFB7-435A-4941-9CF4-C96F0E504471}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2342CFB7-435A-4941-9CF4-C96F0E504471}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2342CFB7-435A-4941-9CF4-C96F0E504471}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
