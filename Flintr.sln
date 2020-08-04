@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flintr-lib", "Flintr-lib\Fl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flintr-Interactive", "Flintr-Interactive\Flintr-Interactive.csproj", "{ADD5941A-E03D-4F8E-851E-625184EF933D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flintr-Administration", "Flintr-Administration\Flintr-Administration.csproj", "{2342CFB7-435A-4941-9CF4-C96F0E504471}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flintr-Administration", "Flintr-Administration\Flintr-Administration.csproj", "{2342CFB7-435A-4941-9CF4-C96F0E504471}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A21CACB5-491B-4F72-8677-48AB1F0C1B76}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
