@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -31,7 +30,7 @@ namespace Flintr_lib.Communication
 
             try
             {
-                readNBytesFromStream(stream, ref msgBuffer, contentLength);
+                readNBytesFromStream(stream, ref msgBuffer);
             }
             catch (Exception e)
             {
@@ -51,7 +50,7 @@ namespace Flintr_lib.Communication
             byte[] headerDeclaration = new byte[validMsgHeaderBlockLength];
             try
             {
-                readNBytesFromStream(stream, ref headerDeclaration, validMsgHeaderBlockLength);
+                readNBytesFromStream(stream, ref headerDeclaration);
             }
             catch (Exception e)
             {
@@ -102,7 +101,7 @@ namespace Flintr_lib.Communication
             {
                 try
                 {
-                    readNBytesFromStream(stream, ref lengthBuffer, 1);
+                    readNBytesFromStream(stream, ref lengthBuffer);
                 }
                 catch (Exception e)
                 {
@@ -126,7 +125,7 @@ namespace Flintr_lib.Communication
         /// <exception cref="IOException">When a problem occurs with the underlying NetworkStream.</exception>
         private static void readNBytesFromStream(NetworkStream stream, ref byte[] buffer)
         {
-            Contract.Requires<ArgumentException>(buffer != null && buffer.Length != 0, "Cannot read to null buffer or buffer of size 0.");
+            if (buffer == null || buffer.Length == 0) throw new ArgumentException("Cannot read to null buffer or buffer of size 0.");
 
             int bytesRead = 0;
             int waitTimeInMilliseconds = 0;
@@ -161,7 +160,7 @@ namespace Flintr_lib.Communication
         /// <exception cref="ArgumentNullException">When the supplied arguments are NULL in value.</exception>
         private static bool compareByteBuffers(byte[] a, byte[] b)
         {
-            Contract.Requires<ArgumentNullException>(a != null && b != null, "Cannot compare empty buffers.");
+            if (a == null || b == null) throw new ArgumentNullException("Cannot compare empty buffers.");
 
             if (a.Length != b.Length) return false;
             for (int i = 0; i < a.Length; i++)
