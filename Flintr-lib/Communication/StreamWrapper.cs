@@ -103,7 +103,10 @@ namespace Flintr_lib.Communication
         /// <exception cref="IOException">When an error occurs while accessing or writing to the underlying NetworkStream.</exception>
         private void writeBytesToStream(byte[] buffer)
         {
-            byte[] header = Encoding.ASCII.GetBytes($"MSG|{buffer.Length}\n");
+            if(buffer == null || buffer.Length == 0) throw new ArgumentException("Raw TCP message cannot be empty.");
+
+            byte[] header = ApplicationLayer.GenerateMessageHeader(buffer.Length);
+
             lock (stream)
             {
                 try
@@ -111,23 +114,12 @@ namespace Flintr_lib.Communication
                     stream.Write(header, 0, header.Length);
                     stream.Write(buffer, 0, buffer.Length);
                 }
-                catch (ArgumentNullException e)
-                {
-                    throw new ArgumentException("Raw TCP message cannot be empty.", e);
-                }
-                catch (ArgumentOutOfRangeException e)
-                {
-                    throw new ArgumentException("Mismatch between stated message length and actual message length.", e);
-                }
                 catch (ObjectDisposedException e)
                 {
                     throw new IOException("The underlying NetworkStream object was unexpectedly closed.", e);
+                    // TODO: Attempt to reconnect and try to send again.
                 }
-                catch (InvalidOperationException e)
-                {
-                    throw new IOException("An error occurred while writing to the NetworkStream.", e);
-                }
-                catch (IOException e)
+                catch (Exception e)
                 {
                     throw new IOException("An error occurred while writing to the NetworkStream.", e);
                 }

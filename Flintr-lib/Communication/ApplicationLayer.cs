@@ -13,6 +13,11 @@ namespace Flintr_lib.Communication
         private static readonly byte[] validMsgHeader = Encoding.ASCII.GetBytes("MSG|");
         private static readonly int validMsgHeaderBlockLength = validMsgHeader.Length;
 
+        public static byte[] GenerateMessageHeader(int messageLength)
+        {
+            return Encoding.ASCII.GetBytes($"MSG|{messageLength}\n");
+        }
+        
         /// <summary>
         /// Retrieves the body of a message from a stream using the content length data provided in to pre-processed header.
         /// </summary>
