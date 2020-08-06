@@ -45,7 +45,7 @@ namespace Flintr_Runner.ManagerHelpers
             {
                 if (client.MessageIsAvailable())
                 {
-                    processMessage(client, client.Receive());
+                    processMessage(client, client.ReceiveObject<string>());
                 }
             }
         }

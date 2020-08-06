@@ -130,7 +130,7 @@ namespace Flintr_lib
         {
             try
             {
-                managerConnection.Send($"REPORT LISTWORKER {workerName}");
+                managerConnection.SendObject<string>($"REPORT LISTWORKER {workerName}");
             }
             catch (ArgumentException e)
             {
@@ -155,7 +155,7 @@ namespace Flintr_lib
         {
             try
             {
-                managerConnection.Send("REPORT LISTALLWORKERS");
+                managerConnection.SendObject<string>("REPORT LISTALLWORKERS");
             }
             catch (ArgumentException e)
             {
@@ -189,7 +189,7 @@ namespace Flintr_lib
 
             try
             {
-                managerConnection.Send("EXECUTE");
+                managerConnection.SendObject<string>("EXECUTE");
                 managerConnection.SendObject(job);
             }
             catch (ArgumentException e)
@@ -223,7 +223,7 @@ namespace Flintr_lib
 
             try
             {
-                managerConnection.Send($"QUEUEJOB");
+                managerConnection.SendObject<string>($"QUEUEJOB");
                 managerConnection.SendObject(job);
             }
             catch (ArgumentException e)

@@ -28,7 +28,7 @@ namespace Flintr_Runner.WorkerHelpers
                 varList.Add(name, obj);
             }
             // Notify the remote manager that we have a copy of the variable.
-            tCPClient.Send($"VAR REGISTER {name}");
+            tCPClient.SendObject<string>($"VAR REGISTER {name}");
         }
 
         public void RemoveVariable(string name)
@@ -42,7 +42,7 @@ namespace Flintr_Runner.WorkerHelpers
                 varList.Remove(name);
             }
             // Notify the remote manager that we no longer have a copy of the variable.
-            tCPClient.Send($"VAR DEREGISTER {name}");
+            tCPClient.SendObject<string>($"VAR DEREGISTER {name}");
         }
 
         public T GetVariable<T>(string name)
@@ -90,7 +90,7 @@ namespace Flintr_Runner.WorkerHelpers
             T result;
             try
             {
-                tCPClient.Send($"VAR RETRIEVE {name}");
+                tCPClient.SendObject<string>($"VAR RETRIEVE {name}");
                 result = tCPClient.ReceiveObject<T>();
             }
             catch (Exception e)
