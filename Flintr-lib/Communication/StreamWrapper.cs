@@ -14,10 +14,6 @@ namespace Flintr_lib.Communication
         private NetworkStream stream;
         private SerializerFactory serializerFactory;
 
-        private static readonly byte[] validMsgHeader = Encoding.ASCII.GetBytes("MSG|");
-        private static readonly int validMsgHeaderBlockLength = validMsgHeader.Length;
-        private static readonly int dataWaitTimeout = 10000;
-
         /// <summary>
         /// Default constructor for StreamWrapper class. Binds to the specified network stream.
         /// </summary>
@@ -70,7 +66,7 @@ namespace Flintr_lib.Communication
         /// <exception cref="IOException">When an error occurs with an underlying NetworkStream read or deserialization operation.</exception>
         public T ReceiveObject<T>()
         {
-            return serializerFactory.Deserialize<T>(readBytesFromStream());
+            return serializerFactory.Deserialize<T>(readMessageFromStream());
         }
 
         /// <summary>
@@ -144,168 +140,19 @@ namespace Flintr_lib.Communication
         /// </summary>
         /// <returns>Byte[] array representing message body.</returns>
         /// <exception cref="IOException">When an error occurs while reading the header or body of an incoming TCP network message.</exception>
-        private MemoryStream readBytesFromStream()
+        private MemoryStream readMessageFromStream()
         {
             lock (stream)
             {
                 waitForData();
 
-                int msgLength = 0;
-                try
-                {
-                    msgLength = readMsgHeader();
-                }
-                catch (IOException e)
-                {
-                    throw new IOException("An error occurred while reading a message header from the underlying NetworkStream", e);
-                }
+                int msgLength = ApplicationLayer.GetMessageLengthFromHeader(stream);
 
-                byte[] msgBuffer = new byte[msgLength];
-                try
-                {
-                    readNBytesFromStream(ref msgBuffer, msgLength);
-                }
-                catch (Exception e)
-                {
-                    throw new IOException("An error occurred while reading a message body from the the underlying NetworkStream", e);
-                }
+                byte[] msgBuffer = ApplicationLayer.GetMessageBody(stream, msgLength);
 
                 MemoryStream ms = new MemoryStream(msgBuffer);
                 return ms;
             }
-        }
-
-        /// <summary>
-        /// Obtains a message header from the network stream that specifies attributes about
-        /// the upcoming message to be transmitted.
-        /// </summary>
-        /// <returns>Expected size of message body in bytes to be received.</returns>
-        /// <exception cref="IOException">When an error occurs with accessing the NetworkStream or the incoming message header contains invalid values.</exception>
-        private int readMsgHeader()
-        {
-            byte[] headerDeclaration = new byte[validMsgHeaderBlockLength];
-            try
-            {
-                readNBytesFromStream(ref headerDeclaration, validMsgHeaderBlockLength);
-            }
-            catch (Exception e)
-            {
-                throw new IOException("An error occurred while reading a message header the underlying NetworkStream", e);
-            }
-
-            if (!compareByteBuffers(validMsgHeader, headerDeclaration)) throw new IOException("Malformed MSG received through TCP channel.");
-
-            string msgLengthAttribute = "";
-            try
-            {
-                msgLengthAttribute = readUntilTerminationCharacter('\n');
-            }
-            catch (IOException e)
-            {
-                throw new IOException("An error occurred while processing a message header.", e);
-            }
-
-            int msgLength = 0;
-            try
-            {
-                msgLength = Convert.ToInt32(msgLengthAttribute);
-            }
-            catch (FormatException e)
-            {
-                throw new IOException("Malformed MSG received through TCP channel.", e);
-            }
-            catch (OverflowException e)
-            {
-                throw new IOException("Network message size is too big. Break the message into smaller chunks and try again.", e);
-            }
-
-            return msgLength;
-        }
-
-        /// <summary>
-        /// Reads from the network stream one character at a time until the specified termination character is found.
-        /// Only used for parsing header information.
-        /// </summary>
-        /// <param name="terminationCharacter">Character to stop at once found in the underlying NetworkStream.</param>
-        /// <returns>All characters from beginning of stream until the termination character (exclusive, but still removed from stream).</returns>
-        /// <exception cref="IOException">When an error occurs in reading the underlying NetworkStream or when parsing the input.</exception>
-        private string readUntilTerminationCharacter(char terminationCharacter)
-        {
-            string msgLengthAttribute = "";
-            byte[] lengthBuffer = new byte[1];
-            while (true)
-            {
-                try
-                {
-                    readNBytesFromStream(ref lengthBuffer, 1);
-                }
-                catch (Exception e)
-                {
-                    throw new IOException("An error occurred while reading the underlying NetworkStream", e);
-                }
-
-                string s = Encoding.ASCII.GetString(lengthBuffer);
-                if (s == terminationCharacter.ToString()) break;
-                else msgLengthAttribute += s;
-            }
-            return msgLengthAttribute;
-        }
-
-        /// <summary>
-        /// Reads a guaranteed number of bytes from a stream. Method is blocking until
-        /// all expectedSize bytes are received.
-        /// </summary>
-        /// <param name="buffer">Buffer to write to.</param>
-        /// <param name="expectedSize">Expected size of message to receive</param>
-        /// <exception cref="ArgumentException">When supplied buffer or expected message size arguments are invalid.</exception>
-        /// <exception cref="IOException">When a problem occurs with the underlying NetworkStream.</exception>
-        private void readNBytesFromStream(ref byte[] buffer, int expectedSize)
-        {
-            // TODO: Add timeout detection with custom exception thrown.
-            int bytesRead = 0;
-            while (bytesRead != expectedSize)
-            {
-                Thread.Sleep(100);
-                try
-                {
-                    bytesRead = stream.Read(buffer, 0, expectedSize);
-                }
-                catch (ArgumentNullException e)
-                {
-                    throw new ArgumentException("A null buffer or expected message size argument was passed to a NetworkStream read function.", e);
-                }
-                catch (ArgumentOutOfRangeException e)
-                {
-                    throw new ArgumentException("An invalid expected message size argument was passed to a NetworkStream read function.", e);
-                }
-                catch (ObjectDisposedException e)
-                {
-                    throw new IOException("The underlying NetworkStream was unexpectedly closed.", e);
-                }
-                catch (InvalidOperationException e)
-                {
-                    throw new IOException("An error occurred while accessing the data in the NetowrkStream.", e);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Helper function that compares the values and length of two byte[] arrays.
-        /// </summary>
-        /// <param name="a">Base array to compare.</param>
-        /// <param name="b">Second array to compare.</param>
-        /// <returns>If the arrays are exactly value-equal.</returns>
-        /// <exception cref="ArgumentNullException">When the supplied arguments are NULL in value.</exception>
-        private static bool compareByteBuffers(byte[] a, byte[] b)
-        {
-            if (a == null) throw new ArgumentNullException("a", "Supplied parameter was NULL.");
-            if (b == null) throw new ArgumentNullException("b", "Supplied parameter was NULL.");
-            if (a.Length != b.Length) return false;
-            for (int i = 0; i < a.Length; i++)
-            {
-                if (a[i] != b[i]) return false;
-            }
-            return true;
         }
 
         /// <summary>
@@ -320,9 +167,9 @@ namespace Flintr_lib.Communication
             {
                 Thread.Sleep(100);
                 waitTime += 100;
-                if(waitTime > dataWaitTimeout)
+                if(waitTime > ApplicationLayer.DataWaitTimeout)
                 {
-                    throw new TimeoutException($"No data recieved for over {dataWaitTimeout / 100} seconds.");
+                    throw new TimeoutException($"No data recieved for over {waitTime / 100} seconds.");
                 }
             }
         }
