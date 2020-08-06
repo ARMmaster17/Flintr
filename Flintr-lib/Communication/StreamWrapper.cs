@@ -1,6 +1,7 @@
 ﻿using Flintr_lib.Factory;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -103,7 +104,7 @@ namespace Flintr_lib.Communication
         /// <exception cref="IOException">When an error occurs while accessing or writing to the underlying NetworkStream.</exception>
         private void writeBytesToStream(byte[] buffer)
         {
-            if(buffer == null || buffer.Length == 0) throw new ArgumentException("Raw TCP message cannot be empty.");
+            Contract.Requires<ArgumentException>(buffer != null && buffer.Length != 0, "Raw TCP message cannot be empty.");
 
             byte[] header = ApplicationLayer.GenerateMessageHeader(buffer.Length);
 

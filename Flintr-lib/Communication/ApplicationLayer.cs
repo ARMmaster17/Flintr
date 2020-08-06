@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -123,11 +124,13 @@ namespace Flintr_lib.Communication
         /// <param name="expectedSize">Expected size of message to receive</param>
         /// <exception cref="ArgumentException">When supplied buffer or expected message size arguments are invalid.</exception>
         /// <exception cref="IOException">When a problem occurs with the underlying NetworkStream.</exception>
-        private static void readNBytesFromStream(NetworkStream stream, ref byte[] buffer, int expectedSize)
+        private static void readNBytesFromStream(NetworkStream stream, ref byte[] buffer)
         {
+            Contract.Requires<ArgumentException>(buffer != null && buffer.Length != 0, "Cannot read to null buffer or buffer of size 0.");
+
             int bytesRead = 0;
             int waitTimeInMilliseconds = 0;
-            while (bytesRead != expectedSize)
+            while (bytesRead != buffer.Length)
             {
                 Thread.Sleep(100);
                 waitTimeInMilliseconds += 100;
@@ -135,19 +138,12 @@ namespace Flintr_lib.Communication
 
                 try
                 {
-                    bytesRead = stream.Read(buffer, 0, expectedSize);
-                }
-                catch (ArgumentNullException e)
-                {
-                    throw new ArgumentException("A null buffer or expected message size argument was passed to a NetworkStream read function.", e);
-                }
-                catch (ArgumentOutOfRangeException e)
-                {
-                    throw new ArgumentException("An invalid expected message size argument was passed to a NetworkStream read function.", e);
+                    bytesRead = stream.Read(buffer, 0, buffer.Length);
                 }
                 catch (ObjectDisposedException e)
                 {
                     throw new IOException("The underlying NetworkStream was unexpectedly closed.", e);
+                    // TODO: Attempt to perform a re-connect and try again.
                 }
                 catch (InvalidOperationException e)
                 {
@@ -165,8 +161,8 @@ namespace Flintr_lib.Communication
         /// <exception cref="ArgumentNullException">When the supplied arguments are NULL in value.</exception>
         private static bool compareByteBuffers(byte[] a, byte[] b)
         {
-            if (a == null) throw new ArgumentNullException("a", "Supplied parameter was NULL.");
-            if (b == null) throw new ArgumentNullException("b", "Supplied parameter was NULL.");
+            Contract.Requires<ArgumentNullException>(a != null && b != null, "Cannot compare empty buffers.");
+
             if (a.Length != b.Length) return false;
             for (int i = 0; i < a.Length; i++)
             {
