@@ -95,7 +95,7 @@ namespace Flintr_Runner.ManagerHelpers.Dispatch
                     }
                 }
                 int taskId = getNextTaskId();
-                worker.ClientServer.Send($"EXECUTE[{taskId}] {job.GetType().AssemblyQualifiedName}");
+                worker.ClientServer.SendObject<string>($"EXECUTE[{taskId}] {job.GetType().AssemblyQualifiedName}");
                 worker.ClientServer.SendObject(job);
                 DispatchedTask taskTracker = new DispatchedTask(taskId, worker.Name);
                 jobSpecificTasksDispatched.Add(taskTracker);

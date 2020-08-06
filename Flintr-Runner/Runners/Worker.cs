@@ -25,7 +25,7 @@ namespace Flintr_Runner.Runners
 
         public override void runWork()
         {
-            managerConnection.Send("HEARTBEAT");
+            managerConnection.SendObject<string>("HEARTBEAT");
             checkForMessages();
             Thread.Sleep(1000);
         }
@@ -40,19 +40,19 @@ namespace Flintr_Runner.Runners
         {
             getNewPort(managerAddress, registrationPort);
             managerConnection = new TCPClient(managerAddress, assignedPort);
-            managerConnection.Send("TRANSFER");
+            managerConnection.SendObject<string>("TRANSFER");
         }
 
         private void getNewPort(IPAddress managerAddress, int registrationPort)
         {
             TCPClient registrationConnection = new TCPClient(managerAddress, registrationPort);
             SharedLogger.Debug(workerName, "Registration Service", $"Registration sent to {managerAddress}:{registrationPort}.");
-            registrationConnection.Send("REGISTER");
+            registrationConnection.SendObject<string>("REGISTER");
             //while (!registrationConnection.MessageIsAvailable())
             //{
             //    Thread.Sleep(500);
             //}
-            string[] registrationInfo = registrationConnection.Receive().Split('|');
+            string[] registrationInfo = registrationConnection.ReceiveObject<string>().Split('|');
             workerName = registrationInfo[1];
             managerMessageProcessor.UpdateRunnerName(workerName);
             SharedLogger.Msg(workerName, "Registration Service", $"Registered to manager server at {managerAddress.ToString()} with port assignment {registrationInfo[0]}.");
@@ -63,7 +63,7 @@ namespace Flintr_Runner.Runners
         {
             if (managerConnection.MessageIsAvailable())
             {
-                managerMessageProcessor.ProcessMessage(managerConnection.Receive(), managerConnection);
+                managerMessageProcessor.ProcessMessage(managerConnection.ReceiveObject<string>(), managerConnection);
             }
         }
     }

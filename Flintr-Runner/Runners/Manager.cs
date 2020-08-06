@@ -91,7 +91,7 @@ namespace Flintr_Runner.Runners
                         }
                         else if (wr.ClientServer.MessageIsAvailable())
                         {
-                            workerMessageProcessor.ProcessMessage(wr, wr.ClientServer.Receive());
+                            workerMessageProcessor.ProcessMessage(wr, wr.ClientServer.ReceiveObject<string>());
                         }
                     }
                     catch (IOException e)
@@ -133,7 +133,7 @@ namespace Flintr_Runner.Runners
             // TODO: Remove if no use is found for this method.
             WorkerRegistration worker = workerRegistrationPool.GetRegistrationPool().FirstOrDefault(o => o.Name == workerName);
             if (worker == null) throw new WorkerDoesNotExistException();
-            worker.ClientServer.Send(rawCommand);
+            worker.ClientServer.SendObject<string>(rawCommand);
         }
     }
 }

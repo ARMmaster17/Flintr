@@ -108,10 +108,10 @@ namespace Flintr_Runner.ManagerHelpers
         /// <param name="newClient">Active connection from worker requesting registration.</param>
         private void startWorkerRegistrationProcess(TCPClient newClient)
         {
-            WorkerRegistration registration = getNewWorkerRegistrationInformation(newClient.Receive());
+            WorkerRegistration registration = getNewWorkerRegistrationInformation(newClient.ReceiveObject<string>());
             try
             {
-                newClient.Send($"{registration.Port.ToString()}|{registration.Name}");
+                newClient.SendObject<string>($"{registration.Port.ToString()}|{registration.Name}");
             }
             catch (ArgumentException e)
             {
