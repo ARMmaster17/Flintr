@@ -40,8 +40,30 @@ namespace Flintr_Interactive
                     case 0:
                         MenuAdministration();
                         break;
+                    case 1:
+                        MenuAdHocJob();
+                        break;
                     case 2:
                         Console.WriteLine("Quitting...");
+                        return;
+                    default:
+                        Console.WriteLine("Invalid input, please try again.");
+                        break;
+                }
+            }
+        }
+
+        private static void MenuAdHocJob()
+        {
+            while (true)
+            {
+                switch (promptMenu("Select a job to send", "Echo", "Return"))
+                {
+                    case 0:
+                        string param = promptUser("Enter a string to display", "default");
+                        flintrInstance.QueueRawJob(new EchoJob(JobStrategy.RunOnAll, param));
+                        return;
+                    case 1:
                         return;
                     default:
                         Console.WriteLine("Invalid input, please try again.");

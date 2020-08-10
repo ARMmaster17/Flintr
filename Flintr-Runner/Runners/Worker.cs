@@ -46,7 +46,7 @@ namespace Flintr_Runner.Runners
         {
             base.Setup(runtimeConfiguration);
             registerWorker(runtimeConfiguration.GetManagerBindAddress(), runtimeConfiguration.GetManagerComPort());
-            taskDispatchManager = new TaskDispatchManager(workerName);
+            taskDispatchManager = new TaskDispatchManager(runtimeConfiguration, workerName);
             managerMessageProcessor = new ManagerMessageProcessor(runtimeConfiguration, workerName, taskDispatchManager);
         }
 
@@ -74,7 +74,6 @@ namespace Flintr_Runner.Runners
             registrationConnection.SendObject<string>("REGISTER");
             string[] registrationInfo = registrationConnection.ReceiveObject<string>().Split('|');
             workerName = registrationInfo[1];
-            managerMessageProcessor.UpdateRunnerName(workerName);
             SharedLogger.Msg(workerName, "Registration Service", $"Registered to manager server at {managerAddress.ToString()} with port assignment {registrationInfo[0]}.");
             assignedPort = Convert.ToInt32(registrationInfo[0]);
         }

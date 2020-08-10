@@ -19,7 +19,6 @@ namespace Flintr_Runner
 
         public static void RunStandalone(RuntimeConfiguration runtimeConfiguration)
         {
-            bool shouldRun = true;
             // Create a manager thread.
             Manager manager = new Manager(runtimeConfiguration);
             // Setup the Manager thread.
@@ -38,7 +37,6 @@ namespace Flintr_Runner
             {
                 runtimeConfiguration.GetLoggerInstance().Error("Runner", "Overwatch", "Console kill command received. Forcing shutdown.");
                 workerPool.KillAllWorkers();
-                shouldRun = false;
             };
             Task.WaitAll(managerThread);
         }
